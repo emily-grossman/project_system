@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 @RestController
@@ -45,9 +44,19 @@ public class ProjectController {
     @GetMapping("/info/{uuid}")
     public ResponseEntity<ProjectResponseDTO> getProjectInfo(
             @PathVariable("uuid") @Valid UUID projectUuid
-    ) throws AccessDeniedException {
+    ) {
         log.info("Called method getProjectInfo about project={}", projectUuid);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(projectService.getProjectInfo(projectUuid));
+    }
+
+    @PatchMapping("/edit/{uuid}")
+    public ResponseEntity<ProjectResponseDTO> editProject(
+            @PathVariable("uuid") @Valid UUID projectUuid,
+            @RequestBody @Valid ProjectUpdateRequestDTO projectToUpdate
+    ) {
+        log.info("Called method editProject about project={}", projectUuid);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(projectService.editProject(projectUuid, projectToUpdate));
     }
 }

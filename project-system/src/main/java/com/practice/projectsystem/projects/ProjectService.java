@@ -4,6 +4,7 @@ package com.practice.projectsystem.projects;
 import com.practice.projectsystem.accesses.*;
 import com.practice.projectsystem.users.UserEntity;
 import com.practice.projectsystem.users.UserRepository;
+import com.practice.projectsystem.users.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -23,19 +24,21 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
     private final ProjectAccessMapper projectAccessMapper;
     private final ProjectAccessRepository projectAccessRepository;
+    private final UserService userService;
 
     public ProjectService(
             UserRepository userRepository,
             ProjectRepository projectRepository,
             ProjectMapper projectMapper,
             ProjectAccessMapper projectAccessMapper,
-            ProjectAccessRepository projectAccessRepository
-    ) {
+            ProjectAccessRepository projectAccessRepository,
+            UserService userService) {
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.projectAccessMapper = projectAccessMapper;
         this.projectAccessRepository = projectAccessRepository;
+        this.userService = userService;
     }
 
     public ProjectResponseDTO createProject(@Valid ProjectRequestDTO projectToCreate) {
@@ -174,4 +177,47 @@ public class ProjectService {
     private boolean hasDirectAccess(UUID projectUuid, UUID userUuid) {
         return projectAccessRepository.findByProjectIdAndUserId(projectUuid, userUuid).isPresent();
     }
+
+    @Transactional
+    public ProjectResponseDTO editProject(
+            @Valid UUID projectUuid,
+            @Valid ProjectUpdateRequestDTO projectToUpdate)
+    {
+        String email = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+
+        UserEntity currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+
+        ProjectEntity project = projectRepository.findById(projectUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Проект не найден"));
+
+        if (isProjectManagerOf(project, currentUser) || hasDirectAccess(projectUuid, currentUser.getUuid())){
+            if (projectToUpdate.projectName() != null) {
+                project.setProjectName(projectToUpdate.projectName());
+            }
+
+            if (projectToUpdate.startDate() != null){
+                project.setStartDate(projectToUpdate.startDate());
+            }
+            if (projectToUpdate.endDate() != null){
+                project.setEndDate(projectToUpdate.endDate());
+            }
+            if (projectToUpdate.customer() != null){
+                project.setCustomer(projectToUpdate.customer());
+            }
+            if (projectToUpdate.description() != null) {
+                project.setDescription(projectToUpdate.description());
+            }
+            if (projectToUpdate.status() != null) {
+                project.setStatus(projectToUpdate.status());
+            }
+
+            var savedEntity = projectRepository.save(project);
+
+            return projectMapper.toDomain(savedEntity);
+        }
+        throw new AccessDeniedException("У вас нет прав на редактирование этого проекта");
+
+    }
+
 }
