@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="project_access", uniqueConstraints = @UniqueConstraint(columnNames = {"project_id, user_id"}))
+@Table(name="project_access", uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
 public class ProjectAccessEntity {
 
     @Id
