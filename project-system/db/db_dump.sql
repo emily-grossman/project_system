@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 5cu58yw290C5CoH6qlBLOZS9naSf8XilhXOHKaCVrGzyEV8fdQOMN5keBevHFLW
+\restrict fO0ykDwu2zhfypywCLgYo2y0NxQ8jTk2ozfHQE79X0e9oaFhRJQ0RZtuYQM5J5U
 
 -- Dumped from database version 18.6 (Debian 18.6-1.pgdg13+2)
 -- Dumped by pg_dump version 18.6 (Debian 18.6-1.pgdg13+2)
@@ -84,7 +84,7 @@ CREATE TABLE public.projects (
     start_date date NOT NULL,
     status character varying(255) NOT NULL,
     department_head_uuid uuid NOT NULL,
-    project_manager_id uuid NOT NULL,
+    project_manager_uuid uuid CONSTRAINT projects_project_manager_id_not_null NOT NULL,
     CONSTRAINT projects_status_check CHECK (((status)::text = ANY ((ARRAY['IN_PROGRESS'::character varying, 'COMPLETED'::character varying, 'CANCELLED'::character varying])::text[])))
 );
 
@@ -147,6 +147,7 @@ CREATE TABLE public.users (
 COPY public.project_access (id, granted_at, project_access_type, project_uuid, user_uuid) FROM stdin;
 1	2026-09-17 13:50:56.948243	EDIT	30a4fefb-8339-47d5-83ad-55706d37f23e	cb3e023b-7a0c-4f1a-8d1b-3c5917449e5c
 2	2026-09-17 13:52:22.401569	READ	30a4fefb-8339-47d5-83ad-55706d37f23e	7c61dde3-2ea0-464d-a6d6-f44aeea678a1
+3	2026-09-17 16:25:00.834639	READ	30a4fefb-8339-47d5-83ad-55706d37f23e	f9e3edc0-ae74-421b-94ba-598690ecf53c
 \.
 
 
@@ -154,7 +155,7 @@ COPY public.project_access (id, granted_at, project_access_type, project_uuid, u
 -- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.projects (uuid, customer, department, description, end_date, project_name, start_date, status, department_head_uuid, project_manager_id) FROM stdin;
+COPY public.projects (uuid, customer, department, description, end_date, project_name, start_date, status, department_head_uuid, project_manager_uuid) FROM stdin;
 30a4fefb-8339-47d5-83ad-55706d37f23e	ООО "Технологии"	IT-отдел	Создание модуля аналитики для внутреннего использования	2027-03-31	Разработка нового модуля	2026-10-01	IN_PROGRESS	7c61dde3-2ea0-464d-a6d6-f44aeea678a1	cb3e023b-7a0c-4f1a-8d1b-3c5917449e5c
 \.
 
@@ -189,8 +190,8 @@ cb3e023b-7a0c-4f1a-8d1b-3c5917449e5c	3
 
 COPY public.users (uuid, department, email, name, password, patronymic, registration_date, surname) FROM stdin;
 f9e3edc0-ae74-421b-94ba-598690ecf53c	Отдел маркетинга	kate_1234@mail.ru	Екатерина	$2a$10$xMBW2oI2eykNUXJjwcxZ9eRBo50mRAl5tyCLWylcyLOVbjcj7ipCO	Сергеевна	2026-09-17 13:45:34.266309	Сорокина
-7c61dde3-2ea0-464d-a6d6-f44aeea678a1	Отдел маркетинга	ann_novik@list.ru	Анна	$2a$10$kBcraq.KxD6cKtqYVeKnee0rlaLqiMQ8w6CXkBnCb5Ato/AQYcWw2	Максимовна	2026-09-17 13:47:14.584532	Новикова
 cb3e023b-7a0c-4f1a-8d1b-3c5917449e5c	IT-отдел	oleg_kuznetsov@gmail.com	Олег	$2a$10$MVj//WhrZ9m13cdlXimdt.4qC2tFLAkidx5wae5GhK/KZODOeSE6u	Владимирович	2026-09-17 13:48:31.146151	Кузнецов
+7c61dde3-2ea0-464d-a6d6-f44aeea678a1	IT-отдел	ann_novik@list.ru	Анна	$2a$10$kBcraq.KxD6cKtqYVeKnee0rlaLqiMQ8w6CXkBnCb5Ato/AQYcWw2	Максимовна	2026-09-17 13:47:14.584532	Новикова
 \.
 
 
@@ -198,7 +199,7 @@ cb3e023b-7a0c-4f1a-8d1b-3c5917449e5c	IT-отдел	oleg_kuznetsov@gmail.com	Ол
 -- Name: project_access_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.project_access_id_seq', 2, true);
+SELECT pg_catalog.setval('public.project_access_id_seq', 3, true);
 
 
 --
@@ -301,7 +302,7 @@ ALTER TABLE ONLY public.projects
 --
 
 ALTER TABLE ONLY public.projects
-    ADD CONSTRAINT fkgdyu73mg454kk9iys9567qft7 FOREIGN KEY (project_manager_id) REFERENCES public.users(uuid);
+    ADD CONSTRAINT fkgdyu73mg454kk9iys9567qft7 FOREIGN KEY (project_manager_uuid) REFERENCES public.users(uuid);
 
 
 --
@@ -324,5 +325,5 @@ ALTER TABLE ONLY public.project_access
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 5cu58yw290C5CoH6qlBLOZS9naSf8XilhXOHKaCVrGzyEV8fdQOMN5keBevHFLW
+\unrestrict fO0ykDwu2zhfypywCLgYo2y0NxQ8jTk2ozfHQE79X0e9oaFhRJQ0RZtuYQM5J5U
 
