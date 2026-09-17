@@ -9,7 +9,9 @@ public record UserResponseDTO(
         Long id,
         String name,
         String surname,
+        String patronymic,
         String email,
+        String department,
         Set<Role> roles,
         LocalDateTime registrationDate
 )

@@ -2,6 +2,8 @@ package com.practice.projectsystem.users;
 
 import jakarta.validation.constraints.*;
 
+import java.util.Set;
+
 
 public record UserRequestDTO(
         @Null
@@ -27,8 +29,8 @@ public record UserRequestDTO(
         @Size(max = 255)
         String email,
 
-        @NotNull
-        Long roleId,
+        @NotEmpty
+        Set<@NotNull Long> roleIds,
 
         @NotBlank
         @Size(min = 8, max = 20)
