@@ -1,7 +1,5 @@
 package com.practice.projectsystem.projects;
 
-import com.practice.projectsystem.users.UserEntity;
-import com.practice.projectsystem.users.UserRepository;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,7 +7,7 @@ public class ProjectMapper {
 
     public ProjectResponseDTO toDomain(ProjectEntity project) {
         return new ProjectResponseDTO(
-                project.getId(),
+                project.getUuid(),
                 project.getProjectName(),
                 project.getDepartment(),
                 project.getDepartmentHead().getSurname() + " " + project.getDepartmentHead().getName() + " " + project.getDepartmentHead().getPatronymic(),
@@ -26,7 +24,7 @@ public class ProjectMapper {
             ProjectRequestDTO project
     ) {
         return new ProjectEntity(
-                project.id(),
+                project.uuid(),
                 project.projectName(),
                 project.department(),
                 null,

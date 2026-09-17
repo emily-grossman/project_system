@@ -8,9 +8,9 @@ public class ProjectAccessMapper {
     public ProjectAccessResponseDTO toDomain(ProjectAccessEntity projectAccess) {
         return new ProjectAccessResponseDTO(
                 projectAccess.getId(),
-                projectAccess.getProject().getId(),
+                projectAccess.getProject().getUuid(),
                 projectAccess.getProject().getProjectName(),
-                projectAccess.getUser().getId(),
+                projectAccess.getUser().getUuid(),
                 projectAccess.getUser().getEmail(),
                 projectAccess.getProjectAccessType(),
                 projectAccess.getGrantedAt()

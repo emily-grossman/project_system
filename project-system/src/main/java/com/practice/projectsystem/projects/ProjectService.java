@@ -48,7 +48,7 @@ public class ProjectService {
             throw new SecurityException("Только руководитель проекта может создавать проекты");
         }
 
-        UserEntity departmentHead = userRepository.findById(projectToCreate.departmentHeadId())
+        UserEntity departmentHead = userRepository.findById(projectToCreate.departmentHeadUuid())
                 .orElseThrow(() -> new IllegalArgumentException("Начальник отдела не найден"));
 
         boolean hasUserDepartmentHeadRole = departmentHead.getRoles().stream()
@@ -90,24 +90,24 @@ public class ProjectService {
             throw new SecurityException("Только руководитель проекта может выдавать доступ");
         }
 
-        ProjectEntity project = projectRepository.findById(accessToAllow.projectId())
+        ProjectEntity project = projectRepository.findById(accessToAllow.projectUuid())
                 .orElseThrow(() -> new IllegalArgumentException("Проект не найден"));
 
-        if (!project.getProjectManager().getId().equals(currentUser.getId())){
+        if (!project.getProjectManager().getUuid().equals(currentUser.getUuid())){
             throw new SecurityException("Вы не являетесь руководителем этого проекта");
         }
 
-        if (accessToAllow.userId().equals(currentUser.getId())) {
+        if (accessToAllow.userUuid().equals(currentUser.getUuid())) {
             throw new IllegalArgumentException("Нельзя выдать доступ самому себе");
         }
 
-        UserEntity targetUser = userRepository.findById(accessToAllow.userId())
+        UserEntity targetUser = userRepository.findById(accessToAllow.userUuid())
                 .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
 
         ProjectAccessEntity projectAccess = projectAccessRepository
                 .findByProjectIdAndUserId(
-                accessToAllow.projectId(),
-                accessToAllow.userId())
+                accessToAllow.projectUuid(),
+                accessToAllow.userUuid())
                 .map(existing -> {
                     existing.setProjectAccessType(accessToAllow.projectAccessType());
                     return existing;

@@ -25,7 +25,7 @@ public class UserMapper {
                 .collect(Collectors.toSet());
 
         return new UserResponseDTO(
-                user.getId(),
+                user.getUuid(),
                 user.getName(),
                 user.getSurname(),
                 user.getPatronymic(),
@@ -40,7 +40,7 @@ public class UserMapper {
             UserRequestDTO user
     ){
         return new UserEntity(
-                user.id(),
+                user.uuid(),
                 user.name(),
                 user.surname(),
                 user.patronymic(),

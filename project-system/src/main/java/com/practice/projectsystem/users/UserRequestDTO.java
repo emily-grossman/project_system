@@ -3,11 +3,12 @@ package com.practice.projectsystem.users;
 import jakarta.validation.constraints.*;
 
 import java.util.Set;
+import java.util.UUID;
 
 
 public record UserRequestDTO(
         @Null
-        Long id,
+        UUID uuid,
 
         @NotBlank
         @Size(max = 50)

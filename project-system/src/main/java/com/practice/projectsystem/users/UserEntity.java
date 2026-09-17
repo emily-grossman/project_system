@@ -10,15 +10,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Table(name="users")
 @Entity
 public class UserEntity {
 
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "uuid", nullable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uuid;
 
     @NotBlank
     @Size(max = 50)
@@ -50,7 +51,7 @@ public class UserEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
+            joinColumns = @JoinColumn(name = "user_uuid"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles = new HashSet<>();
@@ -67,14 +68,14 @@ public class UserEntity {
     }
 
     public UserEntity(
-            Long id,
+            UUID uuid,
             String name,
             String surname,
             String patronymic,
             String department,
             String email)
     {
-        this.id=id;
+        this.uuid=uuid;
         this.name=name;
         this.surname=surname;
         this.patronymic=patronymic;
@@ -131,13 +132,6 @@ public class UserEntity {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getPassword() {
         return password;
@@ -149,5 +143,13 @@ public class UserEntity {
 
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
-
+import java.util.UUID;
 
 
 @Table(name = "projects")
@@ -13,9 +13,9 @@ import java.time.LocalDate;
 public class ProjectEntity {
 
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "uuid", nullable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uuid;
 
     @NotBlank
     @Size(max = 200)
@@ -28,7 +28,7 @@ public class ProjectEntity {
     private String department;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_head_id", nullable = false)
+    @JoinColumn(name = "department_head_uuid", nullable = false)
     private UserEntity departmentHead;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,7 +59,7 @@ public class ProjectEntity {
     }
 
     public ProjectEntity(
-            Long id,
+            UUID uuid,
             String projectName,
             String department,
             UserEntity departmentHead,
@@ -70,7 +70,7 @@ public class ProjectEntity {
             LocalDate endDate,
             ProjectStatus status
     ) {
-        this.id = id;
+        this.uuid = uuid;
         this.projectName = projectName;
         this.department = department;
         this.departmentHead = departmentHead;
@@ -155,11 +155,12 @@ public class ProjectEntity {
         this.status = status;
     }
 
-    public Long getId() {
-        return id;
+
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

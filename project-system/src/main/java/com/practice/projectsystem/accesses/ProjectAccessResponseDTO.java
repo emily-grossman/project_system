@@ -1,12 +1,13 @@
 package com.practice.projectsystem.accesses;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record ProjectAccessResponseDTO(
         Long id,
-        Long projectId,
+        UUID projectUuid,
         String projectName,
-        Long userId,
+        UUID userUuid,
         String userEmail,
         ProjectAccessType projectAccessType,
         LocalDateTime grantedAt

@@ -4,9 +4,10 @@ import com.practice.projectsystem.roles.Role;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 public record UserResponseDTO(
-        Long id,
+        UUID uuid,
         String name,
         String surname,
         String patronymic,

@@ -37,7 +37,7 @@ public class ProjectController {
             @RequestBody @Valid ProjectAccessRequestDTO accessToAllow
     ) {
         log.info("Called allowAccess for projectId={}, userId={}",
-                accessToAllow.projectId(), accessToAllow.userId());
+                accessToAllow.projectUuid(), accessToAllow.userUuid());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(projectService.allowAccess(accessToAllow));
     }

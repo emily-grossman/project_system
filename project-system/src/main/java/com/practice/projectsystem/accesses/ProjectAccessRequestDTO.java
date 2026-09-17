@@ -2,12 +2,14 @@ package com.practice.projectsystem.accesses;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record ProjectAccessRequestDTO(
         @NotNull
-        Long projectId,
+        UUID projectUuid,
 
         @NotNull
-        Long userId,
+        UUID userUuid,
 
         @NotNull
         ProjectAccessType projectAccessType

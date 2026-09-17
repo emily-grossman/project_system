@@ -3,11 +3,12 @@ package com.practice.projectsystem.projects;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 public record ProjectRequestDTO(
         @Null
-        Long id,
+        UUID uuid,
 
         @NotBlank
         @Size(max = 200)
@@ -18,7 +19,7 @@ public record ProjectRequestDTO(
         String department,
 
         @NotNull
-        Long departmentHeadId,
+        UUID departmentHeadUuid,
 
         @NotNull
         @FutureOrPresent

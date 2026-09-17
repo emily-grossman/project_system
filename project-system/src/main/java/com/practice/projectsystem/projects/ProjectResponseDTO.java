@@ -1,10 +1,11 @@
 package com.practice.projectsystem.projects;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 public record ProjectResponseDTO(
-        Long id,
+        UUID uuid,
         String projectName,
         String department,
         String departmentHead,

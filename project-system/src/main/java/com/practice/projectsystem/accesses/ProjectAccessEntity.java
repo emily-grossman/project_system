@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="project_access", uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
+@Table(name="project_access", uniqueConstraints = @UniqueConstraint(columnNames = {"project_uuid", "user_uuid"}))
 public class ProjectAccessEntity {
 
     @Id
@@ -17,11 +17,11 @@ public class ProjectAccessEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_uuid", nullable = false)
     private ProjectEntity project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_uuid", nullable = false)
     private UserEntity user;
 
     @Enumerated(EnumType.STRING)
