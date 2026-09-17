@@ -55,6 +55,7 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+
     // Извлекает роли из токена
     @SuppressWarnings("unchecked")
     public Set<String> getRolesFromToken(String token) {
@@ -70,12 +71,11 @@ public class JwtTokenProvider {
         return new HashSet<>(roles);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token);
-        return true;
     }
 
 

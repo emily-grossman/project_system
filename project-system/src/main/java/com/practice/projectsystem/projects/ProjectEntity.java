@@ -32,7 +32,7 @@ public class ProjectEntity {
     private UserEntity departmentHead;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_manager_id", nullable = false)
+    @JoinColumn(name = "project_manager_uuid", nullable = false)
     private UserEntity projectManager;
 
     @NotBlank

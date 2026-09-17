@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.AccessDeniedException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/projects")
@@ -40,5 +40,14 @@ public class ProjectController {
                 accessToAllow.projectUuid(), accessToAllow.userUuid());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(projectService.allowAccess(accessToAllow));
+    }
+
+    @GetMapping("/info/{uuid}")
+    public ResponseEntity<ProjectResponseDTO> getProjectInfo(
+            @PathVariable("uuid") @Valid UUID projectUuid
+    ) throws AccessDeniedException {
+        log.info("Called method getProjectInfo about project={}", projectUuid);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(projectService.getProjectInfo(projectUuid));
     }
 }

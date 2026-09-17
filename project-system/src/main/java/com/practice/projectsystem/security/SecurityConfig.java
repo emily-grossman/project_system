@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 .requestMatchers("/users/register", "/users/login").permitAll()
                                 .requestMatchers("/projects/create").hasAuthority("Руководитель проекта")
                                 .requestMatchers("/projects/allow").hasAuthority("Руководитель проекта")
+                                .requestMatchers("/projects/info/**").authenticated()
                                 .anyRequest().authenticated()
                         )
 

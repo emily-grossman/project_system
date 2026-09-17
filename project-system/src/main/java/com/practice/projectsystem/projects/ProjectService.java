@@ -4,12 +4,15 @@ package com.practice.projectsystem.projects;
 import com.practice.projectsystem.accesses.*;
 import com.practice.projectsystem.users.UserEntity;
 import com.practice.projectsystem.users.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -39,7 +42,7 @@ public class ProjectService {
         String email = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
         UserEntity projectManager = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         boolean hasUserProjectManagerRole = projectManager.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Руководитель проекта"));
@@ -81,7 +84,7 @@ public class ProjectService {
         String email = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
         UserEntity currentUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         boolean hasUserProjectManagerRole = currentUser.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Руководитель проекта"));
@@ -91,7 +94,7 @@ public class ProjectService {
         }
 
         ProjectEntity project = projectRepository.findById(accessToAllow.projectUuid())
-                .orElseThrow(() -> new IllegalArgumentException("Проект не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Проект не найден"));
 
         if (!project.getProjectManager().getUuid().equals(currentUser.getUuid())){
             throw new SecurityException("Вы не являетесь руководителем этого проекта");
@@ -102,7 +105,7 @@ public class ProjectService {
         }
 
         UserEntity targetUser = userRepository.findById(accessToAllow.userUuid())
-                .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         ProjectAccessEntity projectAccess = projectAccessRepository
                 .findByProjectIdAndUserId(
@@ -122,5 +125,53 @@ public class ProjectService {
         var savedEntity = projectAccessRepository.save(projectAccess);
         return projectAccessMapper.toDomain(savedEntity);
 
+    }
+
+    public ProjectResponseDTO getProjectInfo(@Valid UUID projectUuid) throws AccessDeniedException {
+
+        String email = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+
+        UserEntity currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+
+        ProjectEntity project = projectRepository.findById(projectUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Проект не найден"));
+
+        checkProjectAccess(project, currentUser);
+
+        return projectMapper.toDomain(project);
+
+    }
+
+    private void checkProjectAccess(ProjectEntity project, UserEntity user) throws AccessDeniedException {
+        if (isProjectManagerOf(project, user)){
+            return;
+        }
+        if (isDepartmentHeadOf(project, user)){
+            return;
+        }
+        if (hasDirectAccess(project.getUuid(), user.getUuid())){
+            return;
+        }
+        throw new AccessDeniedException("У вас нет доступа к этому проекту");
+
+    }
+
+    private boolean isProjectManagerOf(ProjectEntity project, UserEntity user) {
+        boolean isSameUser = (project.getProjectManager().getUuid().equals(user.getUuid()));
+        boolean hasProjectManagerRole = user.getRoles().stream()
+                .anyMatch(role -> "Руководитель проекта".equals(role.getName()));
+        return isSameUser && hasProjectManagerRole;
+    }
+
+    private boolean isDepartmentHeadOf(ProjectEntity project, UserEntity user) {
+        boolean isSameUser = (project.getDepartmentHead().getUuid().equals(user.getUuid()));
+        boolean hasDepartmentHeadRole = user.getRoles().stream()
+                .anyMatch(role -> "Начальник".equals(role.getName()));
+        return isSameUser && hasDepartmentHeadRole;
+    }
+
+    private boolean hasDirectAccess(UUID projectUuid, UUID userUuid) {
+        return projectAccessRepository.findByProjectIdAndUserId(projectUuid, userUuid).isPresent();
     }
 }
